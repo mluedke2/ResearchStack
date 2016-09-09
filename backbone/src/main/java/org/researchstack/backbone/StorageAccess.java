@@ -2,9 +2,11 @@ package org.researchstack.backbone;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
+import android.util.Pair;
 
 import org.researchstack.backbone.storage.database.AppDatabase;
 import org.researchstack.backbone.storage.file.EncryptionProvider;
@@ -40,6 +42,10 @@ public class StorageAccess
     //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
     private static final boolean CHECK_THREADS = false;
+
+  private static final String PREFS = "prefs";
+  private static final String PREF_KEY_EMAIL = "email";
+  private static final String PREF_KEY_PASSWORD = "password";
 
     //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
     // Static Fields
@@ -293,6 +299,29 @@ public class StorageAccess
         encryptionProvider.startWithPassphrase(context, pin);
         injectEncrypter();
     }
+
+  private SharedPreferences getSharedPrefs(Context context) {
+    return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+  }
+
+    public void saveCredentials(Context context, String email, String password) {
+      getSharedPrefs(context)
+          .edit()
+          .putString(PREF_KEY_EMAIL, email)
+          .putString(PREF_KEY_PASSWORD, password)
+          .apply();
+    }
+
+  public Pair<String, String> getCredentials(Context context) {
+    SharedPreferences prefs = getSharedPrefs(context);
+    String email = prefs.getString(PREF_KEY_EMAIL, "");
+    String password = prefs.getString(PREF_KEY_PASSWORD, "");
+    if (email.isEmpty() || password.isEmpty()) {
+      return null;
+    } else {
+      return new Pair<>(email, password);
+    }
+  }
 
     /**
      * Creates a master key encrypted by the pin code provided. This can only happen once and will

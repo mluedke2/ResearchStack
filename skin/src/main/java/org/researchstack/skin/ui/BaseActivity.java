@@ -1,4 +1,5 @@
 package org.researchstack.skin.ui;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +8,11 @@ import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.result.TaskResult;
@@ -84,6 +87,35 @@ public class BaseActivity extends PinCodeActivity
                     break;
 
                 case DataProvider.ERROR_NOT_AUTHENTICATED:
+
+                    Pair<String, String> credential = StorageAccess.getInstance().getCredentials
+                        (BaseActivity.this);
+
+                    if (credential != null) {
+
+                      DataProvider.getInstance()
+                          .signIn(
+                              BaseActivity.this,
+                              credential.first,
+                              credential.second
+                          )
+                          .compose(ObservableUtils.applyDefault())
+                          .subscribe(response -> {
+
+                            if(response.isSuccess()) {
+                              Toast.makeText(BaseActivity.this,
+                                  R.string.rss_thank_you, Toast.LENGTH_LONG).show();
+                            } else {
+                              Toast.makeText(BaseActivity.this,
+                                  R.string.rss_email_not_verified, Toast.LENGTH_LONG).show();
+                            }
+                          }, error -> {
+                            Toast.makeText(BaseActivity.this,
+                                R.string.rss_email_not_verified, Toast.LENGTH_LONG).show();
+                          });
+                        return;
+                    }
+
                     messageText = getString(R.string.rss_network_error_sign_in);
                     actionText = getString(R.string.rss_network_error_sign_in_action);
                     action = v -> {

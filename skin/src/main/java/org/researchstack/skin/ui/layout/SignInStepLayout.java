@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding.view.RxView;
 
+import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.result.StepResult;
 import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
@@ -124,8 +125,9 @@ public class SignInStepLayout extends RelativeLayout implements StepLayout
         {
             final String username = this.email.getText().toString();
             final String password = this.password.getText().toString();
+            StorageAccess.getInstance().saveCredentials(getContext(), username, password);
 
-            progress.animate().alpha(1).withStartAction(() -> {
+          progress.animate().alpha(1).withStartAction(() -> {
                 progress.setVisibility(View.VISIBLE);
                 progress.setAlpha(0);
             }).withEndAction(() -> {

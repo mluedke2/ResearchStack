@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import org.researchstack.backbone.StorageAccess;
 import org.researchstack.backbone.result.StepResult;
 import org.researchstack.backbone.step.Step;
 import org.researchstack.backbone.ui.callbacks.StepCallbacks;
@@ -105,6 +106,8 @@ public class SignUpStepLayout extends RelativeLayout implements StepLayout
         {
             final String email = this.email.getText().toString();
             final String password = this.password.getText().toString();
+
+            StorageAccess.getInstance().saveCredentials(getContext(), email, password);
 
             progress.animate()
                     .alpha(1)
