@@ -47,7 +47,7 @@ public class AppPrefs
 
         String time = prefs.getString(SettingsFragment.KEY_AUTO_LOCK_TIME, "1");
         int autoLockMins = isAutoLocked ? Integer.parseInt(time) : 60 * 24 * 365;
-        return autoLockMins * 60 * 1000;
+        return 60*1000; //autoLockMins * 60 * 1000;
     }
 
     public void setSkippedOnboarding(boolean skipped)
